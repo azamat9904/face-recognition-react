@@ -1,0 +1,132 @@
+@import "normalize.css/normalize.css";
+@import '~antd/dist/antd.css';
+
+*,
+*::before,
+*::after{
+    box-sizing: border-box;
+    margin:0;
+    padding:0;
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+  }
+   
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+   
+*::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+}
+
+.main-app{
+    padding:20px;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    width: 1000px;
+    height: 650px;
+    border:1px solid rgba(0,0,0,.1);
+    border-radius: 5px;
+    box-shadow: 0 0 8px 1px rgba(0,0,0,.1);
+    display: flex;
+}
+
+.video-block{
+    width: 70%;
+    
+    &__camera{
+        height: 100%;
+        margin-top: 25px;
+        padding-right: 35px;
+
+        video{
+            width: 100%;
+            height: 100%;
+
+        }
+    }
+
+
+}
+
+.sidebar{
+    width: 30%;
+
+    &__mode{
+
+        button:nth-child(1){
+            margin-right: 10px;
+        }
+
+        button.active{
+            background:darken(#fff,10%);
+        }
+    }
+}
+
+.add-user{
+       
+    &__title{
+        font-size: 14px;
+        margin:10px 0;
+    }
+
+    &__image{
+        height: 250px;
+        border:1px solid rgba(0,0,0,.1);
+        margin:10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img{
+            width:270px;
+            height: 230px;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+
+    &__info{
+        display: flex;
+        align-items: center;
+
+        button{
+            margin-left: 5px;
+        }
+    }
+}
+
+.trusted-faces{
+    margin:10px 0;
+    position: relative;
+
+    &__title{
+        margin-bottom: 3px;
+        text-transform: capitalize;
+        font-weight: 600;
+        font-size: 15;
+        font-style: italic;
+    }
+    &__list{
+        height: 170px;
+        border:1px solid rgba(0,0,0,.1);
+        overflow-y: auto;
+        padding:0 5px;
+    }
+
+    &__empty{
+        position: absolute;
+        top:50%;
+        left:50%;
+        transform: translate(-50%,-50%);
+        font-size: 16px;
+        font-style: italic;
+        color:rgb(141, 141, 141);
+    }
+}
