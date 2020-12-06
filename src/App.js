@@ -13,7 +13,6 @@ const getFormData = object => Object.keys(object).reduce((formData, key) => {
 }, new FormData());
 
 
-
 function App() {
   const webcamRef = useRef(null);
   const [currentImage, setCurrentImage] = useState("");
@@ -25,7 +24,7 @@ function App() {
   const [validationLoading, setValidationLoading] = useState(false);
   const [validatedUser, setValidatedUser] = useState(null);
   const [cancelToken, setCancelToken] = useState(axios.CancelToken.source());
-  const [validationStatus, setValidationStatus] = useState(null);
+  const [validationStatus, setValidationStatus] = useState("Not running");
 
   const onTakePhoto = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -121,6 +120,7 @@ function App() {
         return;
       }
       setValidationStatus('You are unauthorized');
+      setValidatedUser(null);
     }).catch((err) => {
       setValidationStatus("Error");
     }).finally(() => {
@@ -204,7 +204,7 @@ function App() {
                 </div>
                 <div className="face-verification__status">
                   <Divider orientation="left">Status</Divider>
-                  <span>{validationLoading ? 'Checking user...' : validationStatus}</span>
+                  <span className={validationLoading ? 'face-verification__status--loading' : ""}>{validationLoading ? 'Checking user...' : validationStatus}</span>
                 </div>
                 {
                   validatedUser && <div className="face-verification__result">
