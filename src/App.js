@@ -5,10 +5,13 @@ import WebCam from './components/Webcam';
 import { Button, Input, Upload, Divider } from 'antd';
 import iconUrl from './assets/img/icon.png';
 
+const header = { 'Content-Type': 'multipart/form-data' };
+
 const getFormData = object => Object.keys(object).reduce((formData, key) => {
   formData.append(key, object[key]);
   return formData;
 }, new FormData());
+
 
 
 function App() {
@@ -19,6 +22,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [toggleMode, setToggleMode] = useState(false);
   const [active, setActive] = useState(0);
+  const [validationLoading, setValidationLoading] = useState(false);
+  const [validatedUser, setValidatedUser] = useState(null);
+  const [cancelToken, setCancelToken] = useState(axios.CancelToken.source());
+  const [validationStatus, setValidationStatus] = useState(null);
 
   const onTakePhoto = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -41,13 +48,14 @@ function App() {
   }, []);
 
   const onAddNewUser = () => {
+    console.log(currentImage);
+
     const newUser = {
       name: inputValue,
       image: currentImage,
     };
 
     const formData = getFormData(newUser);
-    const header = { 'Content-Type': 'multipart/form-data' };
     setLoading(true);
 
     axios.post('/user', formData, { headers: header }).then(({ data }) => {
@@ -100,6 +108,36 @@ function App() {
     setToggleMode(status);
     setActive(active);
   }
+
+  const onStartValidation = () => {
+    const currentImage = webcamRef.current.getScreenshot();
+    const formData = getFormData({ image: currentImage });
+    setValidationLoading(true);
+
+    axios.post('/validateUser', formData, { headers: header, cancelToken: cancelToken.token }).then(({ data }) => {
+      if (Array.isArray(data.result) & data.result.length > 0) {
+        setValidatedUser(data.result[0]);
+        setValidationStatus('Not running');
+        return;
+      }
+      setValidationStatus('You are unauthorized');
+    }).catch((err) => {
+      setValidationStatus("Error");
+    }).finally(() => {
+      setValidationLoading(false);
+    })
+  };
+
+  const onStopValidation = () => {
+    cancelToken.cancel("Operation canceled by user");
+    setCancelToken(axios.CancelToken.source());
+    onReset();
+  };
+
+  const onReset = () => {
+    setValidatedUser(null);
+    setValidationStatus("Not running");
+  };
 
   return (
     <div className="App">
@@ -160,13 +198,28 @@ function App() {
             </div> : <div className="face-verification">
                 <Divider orientation="left">Face monitoring</Divider>
                 <div className="face-verification__actions">
-                  <Button block>Start</Button>
-                  <Button block>Stop</Button>
+                  <Button block onClick={onStartValidation} type="primary">Start</Button>
+                  <Button block onClick={onStopValidation} type="danger">Stop</Button>
+                  <Button block onClick={onReset}>Reset</Button>
                 </div>
                 <div className="face-verification__status">
                   <Divider orientation="left">Status</Divider>
-                  <span>Not running</span>
+                  <span>{validationLoading ? 'Checking user...' : validationStatus}</span>
                 </div>
+                {
+                  validatedUser && <div className="face-verification__result">
+                    <Divider orientation="left">Result:</Divider>
+                    <div className="face-verification__block">
+                      <img
+                        className="face-verification__img"
+                        src={validatedUser.user.imageUrl}
+                        alt="user image" />
+                    </div>
+                    <div className="face-verification__name">
+                      You are: <b>{validatedUser.user.fullname}</b>
+                    </div>
+                  </div>
+                }
               </div>
           }
         </div>
