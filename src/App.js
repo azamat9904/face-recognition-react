@@ -4,14 +4,9 @@ import axios from './axios';
 import WebCam from './components/Webcam';
 import { Button, Input, Upload, Divider } from 'antd';
 import iconUrl from './assets/img/icon.png';
+import { getFormData } from './helpers/getFormData';
 
 const header = { 'Content-Type': 'multipart/form-data' };
-
-const getFormData = object => Object.keys(object).reduce((formData, key) => {
-  formData.append(key, object[key]);
-  return formData;
-}, new FormData());
-
 
 function App() {
   const webcamRef = useRef(null);
